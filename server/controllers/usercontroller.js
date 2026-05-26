@@ -66,7 +66,7 @@ const readuser= async function (req,res) {
 const getCurrentUser=async(req,res)=>{
     try{
          const userId = req.user.userId;
-        const user=await userModel.findById(userId).select("-password");
+        const user=await usermodel.findById(userId).select("-password");
         res.send({
             success:true,
             message:"You are Authenticated",
