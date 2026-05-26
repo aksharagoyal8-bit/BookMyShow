@@ -4,6 +4,7 @@ const express = require('express');
 const cors=require("cors");
 const connectDB = require('./config/db');
 const userRoute=require('./routes/userRoutes');
+const movieRoute =require("./routes/movieRoutes");
 
 
 
@@ -16,6 +17,7 @@ const PORT = 8080;
 app.use(express.json());
 app.use(cors());
 app.use("/api/users",userRoute);
+app.use("/api/movies",movieRoute);
 
 
 app.listen(PORT,()=>{

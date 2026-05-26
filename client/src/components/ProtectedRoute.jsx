@@ -17,7 +17,11 @@ export default function ProtectedRoute({ children }) {
     const navItems=[{
         key: "home", 
         label:"Home",
-        icon:<HomeOutlined/>
+        icon:<HomeOutlined/>,
+        onClick:()=>{
+            navigate("/");
+        }
+
     },
 {   key:"user",
     label:`${user?user.name:""}`,
@@ -26,6 +30,9 @@ export default function ProtectedRoute({ children }) {
         key:"profile",
         label:"My Profile",
         icon:<ProfileOutlined/>,
+        onClick:()=>{
+            navigate("/admin");
+        }
     },
    {
       key:"logout",
