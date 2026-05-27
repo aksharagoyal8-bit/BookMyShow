@@ -17,7 +17,7 @@ const PORT = 8080;
 app.use(express.json());
 app.use(cors());
 app.use("/api/users",userRoute);
-app.use("/api/movies",movieRoute);
+app.use("/api/movie",movieRoute);
 
 
 app.listen(PORT,()=>{
