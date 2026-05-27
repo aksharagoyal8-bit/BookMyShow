@@ -1,24 +1,9 @@
-const router =require ("express").Router();
-const MovieModel= require("../models/movieModel");
-router.post("/add",async(req,res)=>{
-    try{
-        const newMovie=await MovieModel(req.body);
-        await newMovie.save();
-        res.send({
-            success:true,
-            message:"New movie has been added successfully",
-        })
-    
-    }
-    catch(err){
-        res.send({
-             success:false,
-            message:err.message,
-        })
-    }
-})
+const router = require("express").Router();
+const { addMovie, updateMovie, deleteMovie, getAllMovies } = require("../controllers/movieControllers");
+const MovieModel = require("../models/movieModel");
+router.post("/add", addMovie)
 
-//router.get("/get-all");
-//router.put("/update");
-//router.delete("/delete");
-module.exports=router;
+router.get("/get-all", getAllMovies);
+router.put("/update", updateMovie);
+router.delete("/delete", deleteMovie);
+module.exports = router;
