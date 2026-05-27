@@ -7,5 +7,5 @@ const MovieModel = require("../models/movieModel");
 router.post("/add", addMovie)
 router.get("/get-all", getAllMovies);
 router.put("/update", updateMovie);
-router.delete("/delete", deleteMovie);
+router.put("/delete", deleteMovie);
 module.exports = router;

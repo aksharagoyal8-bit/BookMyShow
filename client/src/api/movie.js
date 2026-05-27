@@ -34,7 +34,7 @@ export const updateMovie=async(values)=>{
 
 export const deleteMovie=async (values)=>{
       try{
-   const response=await axiosInstance.delete(`${BASE_URL}/delete`,values);
+   const response=await axiosInstance.put(`${BASE_URL}/delete`,values);
    return response.data;
 
     }catch(err){
