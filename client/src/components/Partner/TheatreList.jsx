@@ -18,12 +18,12 @@ const TheatreList = () => {
 
   const getData = async () => {
     try {
-       console.log("Fetching for user:", user?._id); // 
+       
       const response = await getAllTheatresForOwner({ ownerId: user?._id });
-      console.log("Response:", response)
+      
       if (response.success) {
         const allTheatres = response.data;
-        // console.log(allTheatres);
+      
         setTheatres(allTheatres);
       } else {
         message.error(response.message);
@@ -123,7 +123,7 @@ const TheatreList = () => {
           Add Theatre
         </Button>
       </div>
-      <Table dataSource={theatres} columns={columns} />
+      <Table dataSource={theatres} columns={columns} rowKey="_id" />
       {isModalOpen && (
         <TheatreFormModal
           isModalOpen={isModalOpen}

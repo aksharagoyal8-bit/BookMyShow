@@ -11,7 +11,7 @@ module.exports = function authMiddleware(req, res, next) {
 
         const token = authHeader.split(' ')[1];
         const verifiedUser = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        console.log(verifiedUser);
+        
         req.user = { userId: verifiedUser.userID }; 
         next();
     } catch(err) {
