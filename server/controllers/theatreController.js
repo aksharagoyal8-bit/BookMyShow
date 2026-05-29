@@ -63,7 +63,7 @@ catch(err){
 }
 const getAllTheatre=async(req,res)=>{
     try{
-    const allTheatres=await theatreModel.find();
+    const allTheatres=await theatreModel.find().populate('owner');
     res.send({
         success:true,
         message:"All theatres have been fetched",
