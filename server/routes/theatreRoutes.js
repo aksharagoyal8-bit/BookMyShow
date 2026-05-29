@@ -8,7 +8,7 @@ router.post("/add",addTheatre);
 router.put("/update",updateTheatre);
 router.put("/delete",deleteTheatre);
 router.get("/get-all",getAllTheatre);
-router.post("get-all-by-owner",getTheatreByOwner);
+router.post("/get-all-by-owner",getTheatreByOwner);
 
 
 

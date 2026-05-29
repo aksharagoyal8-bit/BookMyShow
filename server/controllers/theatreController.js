@@ -72,7 +72,7 @@ const getAllTheatre=async(req,res)=>{
     }
     catch(err){
         res.send({
-            success:fase,
+            success:false,
             message:err.message,
         })
     }
@@ -89,7 +89,7 @@ const getTheatreByOwner=async(req,res)=>{
      })
     }catch(err){
         res.send({
-            success:true,
+            success:false,
             message:err.message,
         })
     }
