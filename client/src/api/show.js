@@ -39,3 +39,11 @@ export const deleteShow=async(values)=>{
         console.log(err);
     }
 }
+export const getTheatreByMovie=async(values)=>{
+    try{
+    const resp=await axiosInstance.post(`${BASE_URL}/get-all-theatres-by-movie`,values);
+    return resp.data;
+    }catch(err){
+        console.log(err);
+    }
+}

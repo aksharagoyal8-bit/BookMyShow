@@ -1,4 +1,4 @@
-const { addShow, deleteShow, updateShow, getAllShowByTheatre, getShowById } = require("../controllers/showController");
+const { addShow, deleteShow, updateShow, getAllShowByTheatre, getShowById, getTheatreByMovie } = require("../controllers/showController");
 
 const router=require("express").Router();
 
@@ -15,7 +15,7 @@ router.post("/delete",deleteShow);
 
 
 
-router.post("/get-all-theatres-by-movie",()=>{});
+router.post("/get-all-theatres-by-movie",getTheatreByMovie);
 
 router.post("/get-show-by-id",getShowById);
 

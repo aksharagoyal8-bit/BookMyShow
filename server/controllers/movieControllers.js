@@ -83,9 +83,26 @@ const addMovie= async(req,res)=>{
     }
 }
 
+const getSingleMovie= async(req,res)=>{
+    try{
+        const movie=await MovieModel.findById(req.params.id);
+        res.send({
+            success:true,
+            message:"Movie fetched successfully",
+            data:movie,
+        })
+    }catch(err){
+        res.send({
+            success:false,
+            message:err.message
+        })
+    }
+}
+
 module.exports={
     getAllMovies,
     updateMovie,
     deleteMovie,
     addMovie,
+    getSingleMovie
 }

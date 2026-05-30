@@ -94,7 +94,37 @@ const getShowById=async(req,res)=>{
     }
 }
 
+const getTheatreByMovie=async(req,res)=>{
+    try{
+        const {movie,date}=req.body;
+        const shows=await showModel.find({movie:movie,date:date}).populate("theatre");
+        const uniqueTheatres=[];
+        shows.forEach((show)=>{
+            let isTheatre=uniqueTheatres.find((theatre)=>theatre._id === show.theatre._id);
+            if(!isTheatre){
+             let showsOfThisTheatre = shows.filter(
+          (showObj) => showObj.theatre._id == show.theatre._id
+        );
+        uniqueTheatres.push({
+          ...show.theatre._doc,
+          shows: showsOfThisTheatre,
+        });
+            }
+        })
+        res.send({
+            success:true,
+            message:"All theatres having shows for movies have been fetched",
+            data:uniqueTheatres
+        })
+    }catch(err){
+        res.send({
+            success:false,
+            message:err.message,
+        })
+    }
+}
 
 
 
-module.exports={addShow,deleteShow,updateShow,getAllShowByTheatre,getShowById};
+
+module.exports={addShow,deleteShow,updateShow,getAllShowByTheatre,getShowById,getTheatreByMovie};

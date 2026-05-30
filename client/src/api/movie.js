@@ -1,3 +1,4 @@
+import axios from "axios";
 import { axiosInstance } from "./index";
 
 const BASE_URL="http://localhost:8080/api/movie";
@@ -38,6 +39,16 @@ export const deleteMovie=async (values)=>{
    return response.data;
 
     }catch(err){
+        console.log(err);
+    }
+}
+
+export const getSingleMovie=async(id)=>{
+    try{
+    const resp=await axiosInstance.get(`${BASE_URL}/get/${id}`);
+    return resp.data;
+    }
+    catch(err){
         console.log(err);
     }
 }

@@ -8,6 +8,7 @@ import {Provider} from "react-redux";
 import store from "./redux/store";
 import Admin from "./components/Admin/Admin";
 import Partner from "./components/Partner/Partner";
+import SingleMovie from "./components/SingleMovie";
 function App() {
   return (
     <Provider store={store}>
@@ -29,6 +30,12 @@ function App() {
         <Partner/>
       </ProtectedRoute>
      }/>
+     <Route path="/movie/:id" element={
+      <ProtectedRoute>
+        <SingleMovie/>
+      </ProtectedRoute>
+     }
+     />
   </Routes>
   </BrowserRouter>
     </Provider>
