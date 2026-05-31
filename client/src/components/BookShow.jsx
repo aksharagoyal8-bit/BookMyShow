@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useRef } from "react";
 import { useSelector } from "react-redux";
 import { getShowById } from "../api/show";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { message, Card, Row, Col, Button } from "antd";
 import moment from "moment";
-import StripeCheckout from "react-stripe-checkout"; // Stripe Checkout
 import { bookShow, makePayment } from "../api/bookings";
 
 const BookShow = () => {
   const { user } = useSelector((state) => state.user);
   const [show, setShow] = useState();
   const [selectedSeats, setSelectedSeats] = useState([]);
+  const [loading, setLoading] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); 
+    const hasConfirmed = useRef(false);
 
   const getData = async () => {
     try {
       const response = await getShowById({ showId: params.id });
       if (response.success) {
         setShow(response.data);
-        // message.success(response.message);
-        console.log(response.data);
       } else {
         message.error(response.message);
       }
@@ -29,7 +29,35 @@ const BookShow = () => {
     }
   };
 
-  const getSeats = () => {
+  // ✅ NEW: Runs when Stripe redirects back here after payment
+  const confirmBookingAfterPayment = async () => {
+    const sessionId = searchParams.get("session_id");
+    const seats = searchParams.get("seats");
+    const userId = searchParams.get("userId");
+
+    if (!sessionId || !seats || !userId) return; // not a redirect, normal page load
+    if (hasConfirmed.current) return;
+    hasConfirmed.current = true;
+    try {
+      const resp = await bookShow({
+        show: params.id,
+        transactionId: sessionId,
+        seats: seats.split(",").map(Number),
+        user: userId,
+      });
+
+      if (resp.success) {
+        message.success("🎉 Booking confirmed! Enjoy your movie.");
+        //navigate("/profile");
+      } else {
+        message.error( "Booking failed.");
+      }
+    } catch (err) {
+      message.error(err.message);
+    }
+  };
+
+ const getSeats = () => {
     let columns = 12;
     let totalSeats = 120;
     let rows = totalSeats / columns; // 10
@@ -98,39 +126,40 @@ const BookShow = () => {
     );
   };
 
-  const onToken = async (token) => {
+  const handlePayment = async () => {
+    if (selectedSeats.length === 0) {
+      message.warning("Please select at least one seat.");
+      return;
+    }
+    setLoading(true);
     try {
-      const response = await makePayment(
-        token,
-        selectedSeats.length * show.ticketPrice * 100
-      );
-      console.log(response);
-      const transactionId = response.data;
+      const response = await makePayment({
+        showId: params.id,
+        seats: selectedSeats,
+        userId: user._id,
+        amount: selectedSeats.length * show.ticketPrice,
+      });
+
       if (response.success) {
-        message.success(response.message);
-        const resp = await bookShow({
-          show: params.id,
-          transactionId,
-          seats: selectedSeats,
-          user: user._id,
-        });
-        if (resp.success) {
-          message.success(resp.message);
-          navigate("/profile");
-        } else {
-          message.error("Failed to book show");
-        }
+        window.location.href = response.url;
       } else {
         message.error(response.message);
       }
     } catch (err) {
       message.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getData();
   }, []);
+
+  useEffect(() => {
+    confirmBookingAfterPayment(); 
+  }, []);
+
   return (
     <>
       {show && (
@@ -140,28 +169,22 @@ const BookShow = () => {
               title={
                 <div className="movie-title-details">
                   <h1>{show.movie.movieName}</h1>
-                  <p>
-                    Theatre: {show.theatre.name}, {show.theatre.address}
-                  </p>
+                  <p>Theatre: {show.theatre.name}, {show.theatre.address}</p>
                 </div>
               }
               extra={
                 <div className="show-name py-3">
-                  <h3>
-                    <span>Show Name:</span> {show.name}
-                  </h3>
+                  <h3><span>Show Name:</span> {show.name}</h3>
                   <h3>
                     <span>Date & Time: </span>
                     {moment(show.date).format("MMM Do YYYY")} at{" "}
                     {moment(show.time, "HH:mm").format("hh:mm A")}
                   </h3>
-                  <h3>
-                    <span>Ticket Price:</span> Rs. {show.ticketPrice}/-
-                  </h3>
+                  <h3><span>Ticket Price:</span> Rs. {show.ticketPrice}/-</h3>
                   <h3>
                     <span>Total Seats:</span> {show.totalSeats}
                     <span> &nbsp;|&nbsp; Available Seats:</span>{" "}
-                    {show.totalSeats - show.bookedSeats.length}{" "}
+                    {show.totalSeats - show.bookedSeats.length}
                   </h3>
                 </div>
               }
@@ -169,19 +192,18 @@ const BookShow = () => {
             >
               {getSeats()}
               {selectedSeats.length > 0 && (
-                <StripeCheckout
-                  token={onToken}
-                  billingAddress
-                  amount={selectedSeats.length * show.ticketPrice * 100}
-                  stripeKey="pk_test_51Td2z7RXsHoaImQwPJRQ3QSdfKDlJoEtKnkRHRehxgePerv1l5J4OubNyvbcDuQ34UHamwmFaou1nzv8HrqJSWGW00T2s1eJBy"
-                >
-                  {/* Use this one in some situation=> pk_test_eTH82XLklCU1LJBkr2cSDiGL001Bew71X8  */}
-                  <div className="max-width-600 mx-auto">
-                    <Button type="primary" shape="round" size="large" block>
-                      Pay Now
-                    </Button>
-                  </div>
-                </StripeCheckout>
+                <div className="max-width-600 mx-auto">
+                  <Button
+                    type="primary"
+                    shape="round"
+                    size="large"
+                    block
+                    loading={loading}
+                    onClick={handlePayment}
+                  >
+                    Pay Now
+                  </Button>
+                </div>
               )}
             </Card>
           </Col>
@@ -190,4 +212,5 @@ const BookShow = () => {
     </>
   );
 };
+
 export default BookShow;
