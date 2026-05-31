@@ -7,6 +7,7 @@ const userRoute=require('./routes/userRoutes');
 const movieRoute =require("./routes/movieRoutes");
 const theatreRoutes=require("./routes/theatreRoutes");
 const showRoute=require("./routes/showRoutes");
+const bookRoute=require("./routes/bookingRoutes");
 
 
 connectDB(process.env.DB_URL);
@@ -20,6 +21,7 @@ app.use("/api/users",userRoute);
 app.use("/api/movie",movieRoute);
 app.use("/api/theatre",theatreRoutes);
 app.use("/api/show",showRoute);
+app.use("/api/booking",bookRoute);
 
 
 app.listen(PORT,()=>{
