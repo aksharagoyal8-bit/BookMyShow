@@ -3,7 +3,7 @@ const stripe=Stripe(process.env.STRIPE_KEY);
 const router=require("express").Router();
 const authMiddleware=require("../middlewares/authMiddleware");
 const movieModel = require("../models/movieModel");
-
+const bookingModel=require("../models/bookingModel");
 
 router.post("/book-show",authMiddleware,async(req,res)=>{
     try{
