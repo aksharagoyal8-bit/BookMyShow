@@ -62,6 +62,7 @@ export default function Login(){
                 </Form>
                 <div>
                     <p>New User? <Link to="/register">Register</Link></p>
+                    <p>Forgot Password?<Link to="/forgot-password">Click Here</Link></p>
                 </div>
                </section>
             </main>

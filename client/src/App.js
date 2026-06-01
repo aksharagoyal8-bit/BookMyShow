@@ -10,6 +10,8 @@ import Admin from "./components/Admin/Admin";
 import Partner from "./components/Partner/Partner";
 import SingleMovie from "./components/SingleMovie";
 import BookShow from "./components/BookShow";
+import Forget from "./components/Forget";
+import Reset from "./components/Reset";
 
 
 
@@ -24,6 +26,8 @@ function App() {
     </ProtectedRoute>}/>
     <Route path="/login" element={<Login/>}/>
      <Route path="/register" element={<Register/>}/>
+     <Route path="/forgot-password" element={<Forget/>}/>
+     <Route path="reset-password" element={<Reset/>}/>
      <Route path="/admin" element={
       <ProtectedRoute>
         <Admin/>

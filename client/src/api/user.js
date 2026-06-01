@@ -28,3 +28,27 @@ export const GetCurrentUser=async ()=>{
      console.log(err);
     }
 }
+
+export const ForgotPassword = async (values) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/api/users/forgot-password`,
+      values
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const ResetPassword = async (values) => {
+  try {
+    const response = await axiosInstance.patch(
+      `/api/users/reset-password`,
+      values
+    );
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};

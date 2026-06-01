@@ -1,5 +1,6 @@
 const jwt=require("jsonwebtoken");
 const usermodel=require("../models/usermodels");
+const EmailHelper = require("../utils/emailHelper");
 
 const createuser=async function (req,res) {
     try{
@@ -81,4 +82,80 @@ const getCurrentUser=async(req,res)=>{
  
 }
 
-module.exports={createuser,readuser,getCurrentUser};
+const generateOtp=()=>{
+    const otp=Math.floor(Math.random()*100000)+90000;
+    return otp;
+}
+const forgotPassword=async(req,res)=>{
+    try{
+      if(req.body.email===undefined){
+        return res.send({
+            success:false,
+            message:"E-mail is required",
+
+        });
+    }
+    const user=await usermodel.findOne({email:req.body.email});
+    if(!user){
+        return res.send({
+            success:false,
+            message:"User with this email does not exist",
+        })
+    }
+    const otp=generateOtp();
+    user.otp=otp;
+    user.otpExpiry=Date.now()+5*60*1000;
+    await user.save();
+    res.send({
+        success:true,
+        message:"OTP sent to your email",
+    })
+    await EmailHelper("otp.html",user.email,{name:user.name,otp:user.otp})
+    }catch(err){
+        res.send({
+            success:false,
+            message:err.message,
+        });
+    }
+ 
+}
+const resetPassword=async(req,res)=>{
+    try{
+     const resetDetails=req.body;
+     if(!resetDetails.password|| !resetDetails.otp){
+        res.send({
+            success:false,
+            message:"Password and OTP are required"
+        })
+     }
+     const user=await usermodel.findOne({otp:resetDetails.otp});
+     if(!user){
+        return res.send({
+            success:false,
+            message:"Invalid OTP"
+        })
+     }
+     if(user.otpExpiry<Date.now()){
+        return res.send({
+            success:false,
+            message:"OTP has expired"
+        })
+     }
+
+     user.password=resetDetails.password;
+     user.otp=undefined;
+     user.otpExpiry=undefined;
+     await user.save();
+     res.send({
+        success:true,
+        message:"Password reset successful"
+     })
+    }catch(err){
+        res.send({
+            success:false,
+            message:err.message,
+        });
+    }
+}
+
+module.exports={createuser,readuser,getCurrentUser,forgotPassword,resetPassword};
