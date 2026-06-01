@@ -110,7 +110,7 @@ const forgotPassword=async(req,res)=>{
         success:true,
         message:"OTP sent to your email",
     })
-    await EmailHelper("otp.html",user.email,{name:user.name,otp:user.otp})
+    await EmailHelper("otp.html",user.email,{name:user.name,otp:user.otp},"OTP for BookMyShowclone")
     }catch(err){
         res.send({
             success:false,

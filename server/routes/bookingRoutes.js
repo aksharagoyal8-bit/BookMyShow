@@ -4,6 +4,7 @@ const router = require("express").Router();
 const authMiddleware = require("../middlewares/authMiddleware");
 const bookingModel = require("../models/bookingModel");
 const showModel = require("../models/showModel");
+const EmailHelper = require("../utils/emailHelper");
  
 router.post("/make-payment", authMiddleware, async (req, res) => {
   try {
@@ -53,12 +54,39 @@ router.post("/book-show", authMiddleware, async (req, res) => {
     const updatedBookedSeats = [...showData.bookedSeats, ...seats];
     showData.bookedSeats = updatedBookedSeats;
     await showData.save();
- 
-    res.send({
-      success: true,
-      message: "Show booked successfully",
-      data: newBooking,
+
+    const populatedBooking=await bookingModel.findById(newBooking._id).populate("show").
+    populate("user").populate("show").populate({
+      path:"show",
+      populate:{
+        path:"movie",
+        model:"movies"
+      }
+    }).populate({
+      path:"show",
+      populate:{
+        path:"theatre",
+        model:"theatres",
+      }
     });
+  
+ 
+   await EmailHelper("ticketTemplate.html",populatedBooking.user.email, {
+      name: populatedBooking.user.name,
+      movie: populatedBooking.show.movie.movieName,
+      theatre: populatedBooking.show.theatre.name,
+      date: populatedBooking.show.date,
+      time: populatedBooking.show.time,
+      seats: populatedBooking.seats,
+      amount: populatedBooking.seats.length * populatedBooking.show.ticketPrice,
+      transactionId: populatedBooking.transactionId,
+    },"Booking Confirmation");
+
+      res.send({
+      success:true,
+      message:"Show Booked",
+      data:populatedBooking
+    })
   } catch (err) {
     res.send({
       success: false,
@@ -69,7 +97,22 @@ router.post("/book-show", authMiddleware, async (req, res) => {
  
 router.get("/all-booking-by-user", authMiddleware, async (req, res) => {
   try {
-    const bookings = await bookingModel.find({ user: req.body.userId });
+    const bookings = await bookingModel.find({ user: req.body.userId }).populate("show")
+      .populate("user")
+      .populate({
+        path: "show",
+        populate: {
+          path: "movie",
+          model: "movies",
+        },
+      })
+      .populate({
+        path: "show",
+        populate: {
+          path: "theatre",
+          model: "theatres",
+        },
+      });
     res.send({
       success: true,
       message: "All bookings have been fetched",
