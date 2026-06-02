@@ -28,7 +28,7 @@ const Bookings = () => {
     <>
       {bookings && (
         <Row gutter={24}>
-          {bookings.map((booking) => {
+         {bookings.filter((booking) => booking?.show?.movie).map((booking) => {
             return (
               <Col key={booking._id} xs={{ span: 24 }} lg={{ span: 12 }}>
                 <Card className="mb-3">
