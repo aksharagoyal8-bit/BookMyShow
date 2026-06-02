@@ -12,6 +12,7 @@ import SingleMovie from "./components/SingleMovie";
 import BookShow from "./components/BookShow";
 import Forget from "./components/Forget";
 import Reset from "./components/Reset";
+import Profile from "./components/Profile/Profile";
 
 
 
@@ -39,6 +40,13 @@ function App() {
         <Partner/>
       </ProtectedRoute>
      }/>
+     <Route path="/profile" element={
+       <ProtectedRoute>
+        <Profile/>
+      </ProtectedRoute>
+     }/>
+
+
      <Route path="/movie/:id" element={
       <ProtectedRoute>
         <SingleMovie/>

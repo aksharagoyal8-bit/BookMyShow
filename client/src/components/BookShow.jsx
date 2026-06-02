@@ -48,7 +48,7 @@ const BookShow = () => {
 
       if (resp.success) {
         message.success("🎉 Booking confirmed! Enjoy your movie.");
-        //navigate("/profile");
+        navigate("/profile");
       } else {
         message.error( "Booking failed.");
       }
