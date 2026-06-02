@@ -148,7 +148,9 @@ const resetPassword=async(req,res)=>{
         })
      }
 
-     user.password=resetDetails.password;
+     const saltRounds = 10;
+const hashedPassword = await bcrypt.hash(resetDetails.password, saltRounds);
+user.password = hashedPassword;
      user.otp=undefined;
      user.otpExpiry=undefined;
      await user.save();
