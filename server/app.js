@@ -2,6 +2,8 @@
 require('dotenv').config(); 
 const express = require('express');
 const cors=require("cors");
+const rateLimit= require("express-rate-limit");
+const helmet=require ("helmet");
 const connectDB = require('./config/db');
 const userRoute=require('./routes/userRoutes');
 const movieRoute =require("./routes/movieRoutes");
@@ -15,8 +17,17 @@ connectDB(process.env.DB_URL);
 const app = express();
 const PORT = 8080;
 
+app.use(helmet());
+
+const apiLimiter=rateLimit({
+    windowMs:15*60*1000,
+    max:100,
+    message:"Too many requests from this IP,Please try again later after 15 minutes."
+})
+
 app.use(express.json());
 app.use(cors());
+app.use("/api/",apiLimiter);
 app.use("/api/users",userRoute);
 app.use("/api/movie",movieRoute);
 app.use("/api/theatre",theatreRoutes);

@@ -6,13 +6,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../redux/userSlice";
 import { hideLoading, showLoading } from "../redux/loaderSlice";
 import { HomeOutlined,ProfileOutlined,LogoutOutlined,UserOutlined } from "@ant-design/icons";
-
+import { ROLE } from "../utils/constant";
 const {Header}=Layout;
-const ROLE={
-    ADMIN:"admin",
-    PARTNER:"partner",
-    USER:"user",
-}
+
 
 export default function ProtectedRoute({ children }) {
     const { user } = useSelector((store) => store.user);

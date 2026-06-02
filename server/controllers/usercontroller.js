@@ -1,6 +1,7 @@
 const jwt=require("jsonwebtoken");
 const usermodel=require("../models/usermodels");
 const EmailHelper = require("../utils/emailHelper");
+const bcrypt=require("bcrypt");
 
 const createuser=async function (req,res) {
     try{
@@ -13,6 +14,11 @@ const createuser=async function (req,res) {
         });
       }
       const newuser=await usermodel(req.body);
+      const saltRounds=10;
+      const hashedPassword=await bcrypt.hash(req.body.password,saltRounds);
+       newuser.password=hashedPassword;
+
+     
       await newuser.save();
       res.send({success:true,message:"Registration successfull, please Login "});
     }
@@ -33,10 +39,10 @@ const readuser= async function (req,res) {
 
         })
      }
+     const isMatch=await bcrypt.compare(req.body.password,user.password);
 
 
-
-     if(user.password !==req.body.password){
+     if(!isMatch){
         return res.send({
          success:false,
         message:"Invalid Password",
